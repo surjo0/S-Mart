@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="accpage">
+        <div class="container">
+            <div class="row">
+                <div class="col-2">
+                    <img src="images/image1.png" width="100%">
+                </div>
+                <div class="col-2">
+                    <div class="form-container">
+                        <div class="form-btn">
+                            <span onclick="login()">Login</span>
+                            <span onclick="register()">Register</span>
+                            <hr id="Indicator">
+                        </div>
+                        <form id="log">
+                            <input type="text" name="username" placeholder="Username">
+                            <input type="password" name="password" placeholder="Password">
+                            <button type="submit" class="btn">Login</button>
+                            <a href=" ">Forgot password</a>
+                        </form>
+
+                        <form id="reg">
+                            <input type="text" name="username" placeholder="Username">
+                            <input type="email" name="email" placeholder="Email">
+                            <input type="password" name="password" placeholder="Password">
+                            <button type="submit" class="btn">Register</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js"></script>
+
+    <script>
+        var LoginForm = document.getElementById("log");
+        var RegForm = document.getElementById("reg");
+        var Indicator = document.getElementById("Indicator");
+        
+        function register() {
+            RegForm.style.transform = "translateX(0px)";
+            LoginForm.style.transform = "translateX(0px)";
+            Indicator.style.transform = "translateX(100px)";
+        }
+        
+        function login() {
+            RegForm.style.transform = "translateX(300px)";
+            LoginForm.style.transform = "translateX(300px)";
+            Indicator.style.transform = "translateX(0px)";
+        }
+    
+        
+        document.getElementById('log').addEventListener('submit', async function(event) {
+            event.preventDefault();
+    
+            const formData = new FormData(this);
+            const username = formData.get('username');
+            const password = formData.get('password');
+    
+           
+        });
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+  apiKey: "AIzaSyBHTXmGt0_7lU5IJdciCZkmCDRkXwptN0E",
+  authDomain: "fir-mart-77338.firebaseapp.com",
+  databaseURL: "https://fir-mart-77338-default-rtdb.firebaseio.com",
+  projectId: "fir-mart-77338",
+  storageBucket: "fir-mart-77338.appspot.com",
+  messagingSenderId: "155068564392",
+  appId: "1:155068564392:web:0760621fa4818f4b2dd39d",
+  measurementId: "G-Z1F2T6QBXP"
+};
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Function to handle user registration
+        async function registerUser(email, password, username) {
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                // Store additional user data in Firestore
+                await db.collection('users').doc(user.uid).set({
+                    username: username,
+                    email: email
+                    // Add more fields as needed
+                });
+                // Redirect user to dashboard or wherever needed
+            } catch (error) {
+                console.error("Error registering user:", error.message);
+            }
+        }
+
+        // Function to handle user login
+        async function loginUser(email, password) {
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                // Redirect user to dashboard or wherever needed
+            } catch (error) {
+                console.error("Error logging in:", error.message);
+            }
+        }
+
+        // Event listener for registration form submission
+        document.getElementById('reg').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const username = formData.get('username');
+            const email = formData.get('email');
+            const password = formData.get('password');
+
+            registerUser(email, password, username);
+        });
+
+        // Event listener for login form submission
+        document.getElementById('log').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const email = formData.get('username'); // Assuming 'username' is actually the email
+            const password = formData.get('password');
+
+            loginUser(email, password);
+        });
+    </script>
+
+</body>
+</html>
